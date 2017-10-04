@@ -15,8 +15,12 @@
  */
 package com.example.android.quakereport;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -25,7 +29,7 @@ import com.example.android.quakereport.model.Earthquake;
 
 import java.util.ArrayList;
 
-public class EarthquakeActivity extends AppCompatActivity {
+public class EarthquakeActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
     ArrayList<Earthquake> earthquakes;
@@ -36,9 +40,10 @@ public class EarthquakeActivity extends AppCompatActivity {
         setContentView(R.layout.earthquake_activity);
 
         // Create a fake list of earthquake locations.
-        earthquakes = new ArrayList<Earthquake>();
+        earthquakes = QueryUtils.extractEarthquakes();
 
-        putData();
+//        dummyData();
+
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
@@ -48,32 +53,43 @@ public class EarthquakeActivity extends AppCompatActivity {
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         earthquakeListView.setAdapter(earthquakeAdapter);
+
+        earthquakeListView.setOnItemClickListener(this);
     }
 
-    private void putData(){
-        Earthquake earthquake1 = new Earthquake();
+    private void dummyData(){
+        /*Earthquake earthquake1 = new Earthquake();
         earthquake1.setMag(7.9);
         earthquake1.setPlace("France");
-        earthquake1.setQuakeDate("2016-05-03");
+        earthquake1.setQuakeTime(1454124312220);
 
         Earthquake earthquake2 = new Earthquake();
         earthquake2.setMag(4.9);
         earthquake2.setPlace("Japan");
-        earthquake2.setQuakeDate("2016-05-04");
+        earthquake2.setQuakeTime(1454124312220);
 
         Earthquake earthquake3 = new Earthquake();
         earthquake3.setMag(3.6);
         earthquake3.setPlace("Thailand");
-        earthquake3.setQuakeDate("2016-05-05");
+        earthquake3.setQuakeTime(1454124312220);
 
         Earthquake earthquake4 = new Earthquake();
         earthquake4.setMag(4.0);
         earthquake4.setPlace("Singapore");
-        earthquake4.setQuakeDate("2016-05-06");
+        earthquake4.setQuakeTime(1454124312220);
 
         earthquakes.add(earthquake1);
         earthquakes.add(earthquake2);
         earthquakes.add(earthquake3);
-        earthquakes.add(earthquake4);
+        earthquakes.add(earthquake4);*/
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Earthquake earthquake = earthquakes.get(position);
+        String quakeUrl = earthquake.getQuakeUrl();
+
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(quakeUrl));
+        startActivity(browserIntent);
     }
 }

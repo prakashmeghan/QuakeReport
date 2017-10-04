@@ -7,7 +7,8 @@ package com.example.android.quakereport.model;
 public class Earthquake {
     private double mag;
     private String place;
-    private String quakeDate;
+    private long quakeTime;
+    private String quakeUrl;
 
     public double getMag() {
         return mag;
@@ -25,11 +26,19 @@ public class Earthquake {
         this.place = place;
     }
 
-    public String getQuakeDate() {
-        return quakeDate;
+    public long getQuaketime() {
+        return quakeTime;
     }
 
-    public void setQuakeDate(String quakeDate) {
-        this.quakeDate = quakeDate;
+    public void setQuakeTime(long quakeTime) {
+        this.quakeTime = quakeTime;
+    }
+
+    public String getQuakeUrl() {
+        return quakeUrl;
+    }
+
+    public void setQuakeUrl(String quakeUrl) {
+        this.quakeUrl = quakeUrl;
     }
 }
