@@ -20,11 +20,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.android.quakereport.adapter.EarthquakeAdapter;
+import com.example.android.quakereport.model.Earthquake;
+
 import java.util.ArrayList;
 
 public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
+    ArrayList<Earthquake> earthquakes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,24 +36,44 @@ public class EarthquakeActivity extends AppCompatActivity {
         setContentView(R.layout.earthquake_activity);
 
         // Create a fake list of earthquake locations.
-        ArrayList<String> earthquakes = new ArrayList<>();
-        earthquakes.add("San Francisco");
-        earthquakes.add("London");
-        earthquakes.add("Tokyo");
-        earthquakes.add("Mexico City");
-        earthquakes.add("Moscow");
-        earthquakes.add("Rio de Janeiro");
-        earthquakes.add("Paris");
+        earthquakes = new ArrayList<Earthquake>();
 
+        putData();
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
         // Create a new {@link ArrayAdapter} of earthquakes
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                this, android.R.layout.simple_list_item_1, earthquakes);
+        EarthquakeAdapter earthquakeAdapter = new EarthquakeAdapter(this, earthquakes);
 
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
-        earthquakeListView.setAdapter(adapter);
+        earthquakeListView.setAdapter(earthquakeAdapter);
+    }
+
+    private void putData(){
+        Earthquake earthquake1 = new Earthquake();
+        earthquake1.setMag(7.9);
+        earthquake1.setPlace("France");
+        earthquake1.setQuakeDate("2016-05-03");
+
+        Earthquake earthquake2 = new Earthquake();
+        earthquake2.setMag(4.9);
+        earthquake2.setPlace("Japan");
+        earthquake2.setQuakeDate("2016-05-04");
+
+        Earthquake earthquake3 = new Earthquake();
+        earthquake3.setMag(3.6);
+        earthquake3.setPlace("Thailand");
+        earthquake3.setQuakeDate("2016-05-05");
+
+        Earthquake earthquake4 = new Earthquake();
+        earthquake4.setMag(4.0);
+        earthquake4.setPlace("Singapore");
+        earthquake4.setQuakeDate("2016-05-06");
+
+        earthquakes.add(earthquake1);
+        earthquakes.add(earthquake2);
+        earthquakes.add(earthquake3);
+        earthquakes.add(earthquake4);
     }
 }
