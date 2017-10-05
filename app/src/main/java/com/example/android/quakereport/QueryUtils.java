@@ -3,19 +3,25 @@ package com.example.android.quakereport;
 import android.util.Log;
 
 import com.example.android.quakereport.model.Earthquake;
+import com.example.android.quakereport.util.CommonUtil;
 import com.example.android.quakereport.util.ConstantUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sprim on 04-10-2017.
  */
 
 public final class QueryUtils {
+
+    private static final String LOG_TAG = "QueryUtils";
     /**
      * Sample JSON response for a USGS query
      */
@@ -36,6 +42,7 @@ public final class QueryUtils {
      * directly from the class name QueryUtils (and an object instance of QueryUtils is not needed).
      */
     private QueryUtils() {
+
     }
 
     /**
@@ -82,6 +89,28 @@ public final class QueryUtils {
         }
 
         // Return the list of earthquakes
+        return earthquakes;
+    }
+
+    /**
+     * Query the USGS dataset and return a list of {@link Earthquake} objects.
+     */
+    public static List<Earthquake> fetchEarthquakeData(String requestUrl) {
+        // Create URL object
+        URL url = CommonUtil.createUrl(requestUrl);
+
+        // Perform HTTP request to the URL and receive a JSON response back
+        String jsonResponse = null;
+        try {
+            jsonResponse = CommonUtil.makeHttpRequest(url);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Problem making the HTTP request.", e);
+        }
+
+        // Extract relevant fields from the JSON response and create a list of {@link Earthquake}s
+        List<Earthquake> earthquakes = CommonUtil.extractFeatureFromJson(jsonResponse);
+
+        // Return the list of {@link Earthquake}s
         return earthquakes;
     }
 }
