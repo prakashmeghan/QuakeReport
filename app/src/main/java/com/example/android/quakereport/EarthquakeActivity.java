@@ -22,14 +22,17 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.android.quakereport.adapter.EarthquakeAdapter;
 import com.example.android.quakereport.loader.EarthquakeLoader;
 import com.example.android.quakereport.model.Earthquake;
+import com.example.android.quakereport.util.ConnectionDetector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +47,20 @@ public class EarthquakeActivity extends AppCompatActivity implements AdapterView
 
     private EarthquakeAdapter earthquakeAdapter;
 
+    /** TextView that is displayed when the list is empty */
+    private TextView mEmptyStateTextView;
+    View loadingIndicator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
         // Find a reference to the {@link ListView} in the layout
+        loadingIndicator = findViewById(R.id.loading_indicator);
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        mEmptyStateTextView = (TextView) findViewById(R.id.empty_view);
+        earthquakeListView.setEmptyView(mEmptyStateTextView);
 
         // Create a new {@link ArrayAdapter} of earthquakes
         earthquakeAdapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
@@ -61,6 +71,18 @@ public class EarthquakeActivity extends AppCompatActivity implements AdapterView
 
         earthquakeListView.setOnItemClickListener(this);
 
+        ConnectionDetector connectionDetector = new ConnectionDetector(getBaseContext());
+        if (connectionDetector.isConnectingToInternet()) {
+            initLoader();
+        } else {
+            loadingIndicator.setVisibility(View.GONE);
+            mEmptyStateTextView.setText(R.string.no_internet);
+        }
+
+
+    }
+
+    private void initLoader() {
         // Get a reference to the LoaderManager, in order to interact with loaders.
         LoaderManager loaderManager = getSupportLoaderManager();
 
@@ -68,6 +90,8 @@ public class EarthquakeActivity extends AppCompatActivity implements AdapterView
         // the bundle. Pass in this activity for the LoaderCallbacks parameter (which is valid
         // because this activity implements the LoaderCallbacks interface).
         loaderManager.initLoader(1, null, this);
+
+        Log.i(LOG_TAG, "initLoader");
     }
 
     @Override
@@ -81,11 +105,16 @@ public class EarthquakeActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int id, Bundle args) {
+        Log.i(LOG_TAG, "onCreateLoader");
         return new EarthquakeLoader(EarthquakeActivity.this, USGS_REQUEST_URL);
     }
 
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> data) {
+        Log.i(LOG_TAG, "onLoadFinished");
+
+        loadingIndicator.setVisibility(View.GONE);
+        mEmptyStateTextView.setText(R.string.no_earthquakes);
         // Clear the adapter of previous earthquake data
         earthquakeAdapter.clear();
 
@@ -98,6 +127,7 @@ public class EarthquakeActivity extends AppCompatActivity implements AdapterView
 
     @Override
     public void onLoaderReset(Loader<List<Earthquake>> loader) {
+        Log.i(LOG_TAG, "onLoaderReset");
         earthquakeAdapter.clear();
     }
 }
